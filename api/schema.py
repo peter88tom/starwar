@@ -39,7 +39,7 @@ class Query(graphene.ObjectType):
   all_user = graphene.List(UserType)
   user = graphene.Field(UserType,user_id=graphene.Int())
   all_planets = graphene.List(PlanetType)
-  all_people = graphene.List(PersonType)
+  all_people = graphene.List(PersonType, search=graphene.String(), first=graphene.Int(), skip=graphene.Int())
 
 
   # Query django model to return all users
@@ -53,8 +53,22 @@ class Query(graphene.ObjectType):
     return planet_qs
 
   # Resolve all people
-  def resolve_all_people(self, info, **kwargs):
+  def resolve_all_people(self, info, search=None, first=None, skip=None, **kwargs):
     people_qs = People.objects.all()
+
+    # Search and pagination
+    if search:
+      filter = Q(name__contains=search)
+      people_qs = people_qs.filter(filter)
+
+    # Get first
+    if first:
+      people_qs = people_qs[:first]
+
+    # Skip
+    if skip:
+      people_qs = people_qs[skip:]
+
     return people_qs
 
 
