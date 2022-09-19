@@ -49,11 +49,17 @@ class Query(graphene.ObjectType):
 
   # Query all planets
   def resolve_all_planets(self, info, **kwargs):
+    user = info.contect.user
+    if user.is_anonymous:
+      raise Exception("Login is required")
     planet_qs = Planet.objects.all()
     return planet_qs
 
   # Resolve all people
   def resolve_all_people(self, info, search=None, first=None, skip=None, **kwargs):
+    user = info.context.user
+    if user.is_anonymous:
+      raise Exception("Login is required")
     people_qs = People.objects.all()
 
     # Search and pagination
