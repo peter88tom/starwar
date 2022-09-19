@@ -3,7 +3,25 @@ from django.db import models
 # Create your models here.
 # This is a copy of swapi model for planet and people
 # link: https://github.com/Juriy/swapi/blob/master/resources/models.py
-class Planet(models.Model):
+
+class DateTimeModel(models.Model):
+  """ A base model with created and edited datetime fields """
+
+  class Meta:
+    abstract = True
+
+  created = models.DateTimeField(auto_now_add=True)
+  edited = models.DateTimeField(auto_now=True)
+
+
+class EditableModel(models.Model):
+  """
+  A model with a boolean that determins the read/write state of the model
+  """
+
+  editable = models.NullBooleanField()
+
+class Planet(DateTimeModel):
   name = models.CharField(max_length=100)
   rotation_period = models.CharField(max_length=40)
   orbital_period = models.CharField(max_length=40)
@@ -18,7 +36,7 @@ class Planet(models.Model):
     return self.name
 
 
-class People(models.Model):
+class People(DateTimeModel):
   name = models.CharField(max_length=100)
   height = models.CharField(max_length=10, blank=True)
   mass = models.CharField(max_length=10, blank=True)
