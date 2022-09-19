@@ -2,6 +2,8 @@ import graphene
 from graphene_django import DjangoObjectType, DjangoListField
 from django.contrib.auth import get_user_model
 import graphql_jwt
+from api.models import People, Planet
+from django.db.models import  Q
 
 
 """
@@ -14,16 +16,46 @@ class UserType(DjangoObjectType):
 
 
 """
+Planet Type
+"""
+class PlanetType(DjangoObjectType):
+  class Meta:
+    model = Planet
+    fields = "__all__"
+
+
+"""
+People Type
+"""
+class PersonType(DjangoObjectType):
+  class Meta:
+    model = People
+    fields = ['id','name', 'height', 'mass', 'gender', 'homeworld']
+
+"""
 The Query class defines the GraphQL queries that the API will provide to the clients.
 """
 class Query(graphene.ObjectType):
   all_user = graphene.List(UserType)
   user = graphene.Field(UserType,user_id=graphene.Int())
+  all_planets = graphene.List(PlanetType)
+  all_people = graphene.List(PersonType)
 
 
   # Query django model to return all users
   def resolve_all_user(self, info, **kwargs):
-    return get_user_model().objects.all()
+    user_qs = get_user_model().objects.all()
+    return user_qs
+
+  # Query all planets
+  def resolve_all_planets(self, info, **kwargs):
+    planet_qs = Planet.objects.all()
+    return planet_qs
+
+  # Resolve all people
+  def resolve_all_people(self, info, **kwargs):
+    people_qs = People.objects.all()
+    return people_qs
 
 
 # Register mutation to graphQL
