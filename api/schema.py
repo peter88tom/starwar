@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType, DjangoListField
 from django.contrib.auth import get_user_model
+import graphql_jwt
 
 
 """
@@ -25,6 +26,13 @@ class Query(graphene.ObjectType):
     return get_user_model().objects.all()
 
 
+# Register mutation to graphQL
+class Mutation(graphene.ObjectType):
+  # jwt authentication
+  token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+  verify_token = graphql_jwt.Verify.Field()
+  refresh_token = graphql_jwt.Refresh.Field()
+
 # Register query to graphQL
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)
 
