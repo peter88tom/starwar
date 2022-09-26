@@ -4,6 +4,7 @@ certifi==2022.9.14
 charset-normalizer==2.1.1
 Django==3.2
 django-environ==0.9.0
+django-filter==22.1
 django-graphql-jwt==0.3.4
 graphene==2.1.9
 graphene-django==2.15.0

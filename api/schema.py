@@ -1,9 +1,12 @@
 import graphene
 from graphene_django import DjangoObjectType, DjangoListField
 from django.contrib.auth import get_user_model
+from django.db.models import  Q
 import graphql_jwt
 from api.models import People, Planet
-from django.db.models import  Q
+
+
+
 
 
 """
@@ -49,7 +52,7 @@ class Query(graphene.ObjectType):
 
   # Query all planets
   def resolve_all_planets(self, info, **kwargs):
-    user = info.contect.user
+    user = info.context.user
     if user.is_anonymous:
       raise Exception("Login is required")
     planet_qs = Planet.objects.all()
@@ -60,7 +63,7 @@ class Query(graphene.ObjectType):
     user = info.context.user
     if user.is_anonymous:
       raise Exception("Login is required")
-    people_qs = People.objects.all()
+    people_qs = People.objects.select_related("homeworld").all()
 
     # Search and pagination
     if search:
